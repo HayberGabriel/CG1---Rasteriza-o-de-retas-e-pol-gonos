@@ -1,6 +1,7 @@
 import math
+from math import *
 from PIL import Image
-import random
+from random import *
 
 class Raster():
     # Inicializa a classe com a resolução inicial e todas as estruturas vazias
@@ -15,7 +16,7 @@ class Raster():
     # Adiciona novo vertice na lista de vertices se este já não existir
     def adiciona_vertice(self, x, y):
         # Checa se as coordenadas do vertice cabem no espaço
-        if fabs(x) <= self.width/2 and fabs(y) <= self.height/2:
+        if fabs(x) <= self.width / 2 and fabs(y) <= self.height / 2:
             for v in self.vertices:
                 if v == [x, y]:
                     print("Vertice ", v, " já existe e não foi adicionado\n")
@@ -51,8 +52,8 @@ class Raster():
                     if i == len(lista) - 1:
                         if [lista[-1], lista[0]] not in self.arestas and [lista[0], lista[-1]] not in self.arestas:
                             self.arestas.append([lista[-1], lista[0]])
-                    elif [lista[i], lista[i+1]] not in self.arestas and [lista[i+1], lista[i]] not in self.arestas:
-                        self.arestas.append([lista[i], lista[i+1]])
+                    elif [lista[i], lista[i + 1]] not in self.arestas and [lista[i + 1], lista[i]] not in self.arestas:
+                        self.arestas.append([lista[i], lista[i + 1]])
             else:
                 input("Face impossível")
 
@@ -70,8 +71,8 @@ class Raster():
 
     # Altera a resolução do espaço e rearranja as coordenadas dos vertices de acordo com a mudança da resolução
     def altera_resolução(self, width, height):
-        fatorx = width/self.width
-        fatory = height/self.height
+        fatorx = width / self.width
+        fatory = height / self.height
         self.width = width
         self.height = height
         for v in self.vertices:
@@ -91,18 +92,18 @@ class Raster():
         lista_aux = []
         for y in range(int(y_min) + 1, int(y_max), 1):
             count = 0
-            ant = False    # pixel anterior pertence ao modelo?
+            ant = False  # pixel anterior pertence ao modelo?
             inside = False  # pixel está dentro de um poligono?
 
             for x in range(int(x_min), int(x_max) + 1, 1):
                 # Soma o contador na transição de borda para espaço em branco
-                if [x, y] not in modelo_face and ant:   # pixel fora do modelo mas pixel anterior era borda
+                if [x, y] not in modelo_face and ant:  # pixel fora do modelo mas pixel anterior era borda
                     count += 1
                 if count % 2 != 0:
                     if [x, y] not in modelo_face:
                         lista_aux.append([x, y])
                     else:
-                        inside = True   # Encontra borda enquanto pinta, portanto esta borda deve pertencer ao poligono
+                        inside = True  # Encontra borda enquanto pinta, portanto esta borda deve pertencer ao poligono
                 if [x, y] in modelo_face:
                     ant = True
                 else:
@@ -118,11 +119,12 @@ class Raster():
     # Produz as bordas de uma face em um modelo alternativo
     def produz_modelo_face(self, vertices):
         modelo = []
-        for aresta in [[i,j] for i in vertices for j in vertices if j == i + 1 or (i == vertices[-1] and j == vertices[0])]:
-            x1 = int(self.vertices[aresta[0]][0])    # Posição x do vertice aresta[0]
+        for aresta in [[i, j] for i in vertices for j in vertices if
+                       j == i + 1 or (i == vertices[-1] and j == vertices[0])]:
+            x1 = int(self.vertices[aresta[0]][0])  # Posição x do vertice aresta[0]
             y1 = int(self.vertices[aresta[0]][1])
             x2 = int(self.vertices[aresta[1]][0])
-            y2 = int(self.vertices[aresta[1]][1])    # Posição y do vertice aresta[1]
+            y2 = int(self.vertices[aresta[1]][1])  # Posição y do vertice aresta[1]
             # Inicia o modelo da reta a partir do ponto inicial
             self.produz_fragmento(x1, y1, modelo)
             # Checa se dx não é 0
@@ -165,10 +167,10 @@ class Raster():
         self.modelo = []
         # Coloca as arestas da lista de arestas no modelo
         for aresta in self.arestas:
-            x1 = int(self.vertices[aresta[0]][0])    # Posição x do vertice aresta[0]
+            x1 = int(self.vertices[aresta[0]][0])  # Posição x do vertice aresta[0]
             y1 = int(self.vertices[aresta[0]][1])
             x2 = int(self.vertices[aresta[1]][0])
-            y2 = int(self.vertices[aresta[1]][1])    # Posição y do vertice aresta[1]
+            y2 = int(self.vertices[aresta[1]][1])  # Posição y do vertice aresta[1]
             # Inicia o modelo da reta a partir do ponto inicial
             self.produz_fragmento(x1, y1, self.modelo)
             # Checa se dx não é 0
@@ -214,8 +216,8 @@ class Raster():
             # Encontra todos o valores de x e y para cada vertice que define a face, e então encontra seus
             # valores mínimos e máximos
             for v in face:
-                lista_vx.append(self.vertices[v][0])    # lista as posições de x para cada vertice da face
-                lista_vy.append(self.vertices[v][1])    # lista as posições de y para cada vertice da face
+                lista_vx.append(self.vertices[v][0])  # lista as posições de x para cada vertice da face
+                lista_vy.append(self.vertices[v][1])  # lista as posições de y para cada vertice da face
             x_min = min(lista_vx)
             y_min = min(lista_vy)
             x_max = max(lista_vx)
@@ -225,7 +227,6 @@ class Raster():
             # Copia os pixels do espaço alternativo para o modelo principal
             for pixel in modelo_face:
                 self.produz_fragmento(pixel[0], pixel[1], self.modelo)
-
 
     # Desenha os pixels contidos no modelo
     def desenha_imagem(self):
@@ -255,20 +256,22 @@ class Raster():
         y_max = max(lista_vy)
         return x_min, x_max, y_min, y_max
 
-    def cria_poligono(self, tipo, base, x, y, ttl = 100):
+    def cria_poligono(self, tipo, base, x, y, ttl=100):
 
         if ttl == 0:
             return None
 
         match tipo:
             case 'quadrado':
-                vertices = [[x, y], [x+base, y], [x+base, y+base], [x,y+base]]
+                vertices = [[x, y], [x + base, y], [x + base, y + base], [x, y + base]]
                 ind = [i for i in range(len(self.vertices), len(self.vertices) + 4)]
             case 'triangulo':
-                vertices = [[x, y], [x + base, y], [x+(base/2), y+sqrt(3)*(base/2)]]
+                vertices = [[x, y], [x + base, y], [x + (base / 2), y + sqrt(3) * (base / 2)]]
                 ind = [i for i in range(len(self.vertices), len(self.vertices) + 3)]
             case 'hexagono':
-                vertices = [[x,y], [x+base, y], [x+3*(base/2), y+sqrt(3)*(base/2)], [x+base, y+sqrt(3)*base], [x, y+sqrt(3)*base], [x-base/2, y+sqrt(3)*(base/2)]]
+                vertices = [[x, y], [x + base, y], [x + 3 * (base / 2), y + sqrt(3) * (base / 2)],
+                            [x + base, y + sqrt(3) * base], [x, y + sqrt(3) * base],
+                            [x - base / 2, y + sqrt(3) * (base / 2)]]
                 ind = [i for i in range(len(self.vertices), len(self.vertices) + 6)]
             case _:
                 return input("tipo invalido")
@@ -276,21 +279,22 @@ class Raster():
         # Trata de colisões
         for face in self.faces:
             x_min, x_max, y_min, y_max = self.find_minimax(face)
-            pm_x = sum(vertices[i][0] for i in range(len(vertices)))/len(vertices)
-            pm_y = sum(vertices[i][1] for i in range(len(vertices)))/len(vertices)
+            pm_x = sum(vertices[i][0] for i in range(len(vertices))) / len(vertices)
+            pm_y = sum(vertices[i][1] for i in range(len(vertices))) / len(vertices)
             pm_atual = [pm_x, pm_y]
-            pm_face = [(x_max + x_min)/2, (y_max + y_min)/2]
+            pm_face = [(x_max + x_min) / 2, (y_max + y_min) / 2]
             dist_aprox = sqrt((pm_atual[0] - pm_face[0]) ** 2 + (pm_atual[1] - pm_face[1]) ** 2)
             if tipo == 'hexagono':
                 if dist_aprox < base * 2:
                     x = randint(int(-self.width / 2 + base / 2), int(self.width / 2 - 3 * (base / 2)))
                     y = randint(int(-self.height / 2 + 1), int(self.height / 2 - base * sqrt(3)))
                     return self.cria_poligono(tipo, base, x, y, ttl - 1)
-            elif dist_aprox < 3 * base/2:
+            elif dist_aprox < 3 * base / 2:
                 x = randint(int(-self.width / 2 + 1), int(self.width / 2 - base))
                 y = randint(int(-self.height / 2 + 1), int(self.height / 2 - base))
                 return self.cria_poligono(tipo, base, x, y, ttl - 1)
         return vertices, ind
+
 
 if __name__ == '__main__':
     espaço = Raster(800, 600)
@@ -298,7 +302,7 @@ if __name__ == '__main__':
     while True:
         print("1 - Adicionar Vertice\n2 - Adicionar Aresta\n3 - Adicionar face\n4 - Desenhar modelo\n"
               "5 - Alterar resolução\n6 - Resetar Modelo\n")
-        
+
         x = input("Selecione uma função: ")
         match x:
             case '1':
