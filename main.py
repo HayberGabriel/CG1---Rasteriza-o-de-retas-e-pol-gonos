@@ -1,7 +1,9 @@
 import math
 from math import *
+from tkinter import messagebox
 from PIL import Image
 from random import *
+import tkinter as tk
 
 class Raster():
     # Inicializa a classe com a resolução inicial e todas as estruturas vazias
@@ -16,7 +18,7 @@ class Raster():
     # Adiciona novo vertice na lista de vertices se este já não existir
     def adiciona_vertice(self, x, y):
         # Checa se as coordenadas do vertice cabem no espaço
-        if fabs(x) <= self.width / 2 and fabs(y) <= self.height / 2:
+        if math.fabs(x) <= self.width / 2 and math.fabs(y) <= self.height / 2:
             for v in self.vertices:
                 if v == [x, y]:
                     print("Vertice ", v, " já existe e não foi adicionado\n")
@@ -32,7 +34,11 @@ class Raster():
                 pass
             else:
                 self.arestas.append([v1, v2])
+
+
         else:
+            print(v1)
+            print(v2)
             input("Aresta impossível")
 
     # Adiciona uma face a lista de faces na forma [v1, v2, ..., vn] onde v é a posição do vertice na
@@ -135,11 +141,11 @@ class Raster():
                 b = y1 - (m * x1)
                 # Se o intervalo entre as posições de x for maior ou igual a dy
                 # percorre x e encontra y para cada valor de x
-                if fabs(x2 - x1) >= fabs(y2 - y1):
+                if math.fabs(x2 - x1) >= math.fabs(y2 - y1):
                     xm = min(x1, x2)
                     x = xm
                     # Obtem o vertice com o menor valor de x e o percorre até o outro vertice
-                    while x < xm + fabs(x2 - x1):
+                    while x < xm + math.fabs(x2 - x1):
                         x += 1
                         y = (m * x) + b
                         self.produz_fragmento(x, y, modelo)
@@ -147,7 +153,7 @@ class Raster():
                 else:
                     ym = min(y1, y2)
                     y = ym
-                    while y < ym + fabs(y2 - y1):
+                    while y < ym + math.fabs(y2 - y1):
                         y += 1
                         # Formula da reta adaptada para encontrar x
                         x = (y - b) / m
@@ -156,7 +162,7 @@ class Raster():
             else:
                 ym = min(y1, y2)
                 y = ym
-                while y < ym + fabs(y2 - y1):
+                while y < ym + math.fabs(y2 - y1):
                     y += 1
                     # Repete o valor de x enquanto percorre y
                     self.produz_fragmento(x1, y, modelo)
@@ -181,11 +187,11 @@ class Raster():
                 b = y1 - (m * x1)
                 # Se o intervalo entre as posições de x for maior ou igual a dy
                 # percorre x e encontra y para cada valor de x
-                if fabs(x2 - x1) >= fabs(y2 - y1):
+                if math.fabs(x2 - x1) >= math.fabs(y2 - y1):
                     xm = min(x1, x2)
                     x = xm
                     # Obtem o vertice com o menor valor de x e o percorre até o outro vertice
-                    while x < xm + fabs(x2 - x1):
+                    while x < xm + math.fabs(x2 - x1):
                         x += 1
                         y = (m * x) + b
                         self.produz_fragmento(x, y, self.modelo)
@@ -193,7 +199,7 @@ class Raster():
                 else:
                     ym = min(y1, y2)
                     y = ym
-                    while y < ym + fabs(y2 - y1):
+                    while y < ym + math.fabs(y2 - y1):
                         y += 1
                         # Formula da reta adaptada para encontrar x
                         x = (y - b) / m
@@ -202,7 +208,7 @@ class Raster():
             else:
                 ym = min(y1, y2)
                 y = ym
-                while y < ym + fabs(y2 - y1):
+                while y < ym + math.fabs(y2 - y1):
                     y += 1
                     # Repete o valor de x enquanto percorre y
                     self.produz_fragmento(x1, y, self.modelo)
@@ -297,53 +303,93 @@ class Raster():
 
 
 if __name__ == '__main__':
-    espaço = Raster(800, 600)
+    espaço = Raster(1920, 1080)
 
     while True:
-        print("1 - Adicionar Vertice\n2 - Adicionar Aresta\n3 - Adicionar face\n4 - Desenhar modelo\n"
-              "5 - Alterar resolução\n6 - Resetar Modelo\n")
+        # Cria uma janela
+        janela = tk.Tk()
+        janela.title("Menu")
+        from tkinter import simpledialog
 
-        x = input("Selecione uma função: ")
-        match x:
-            case '1':
-                espaço.enum_vertices()
-                # Obtem uma lista de vertices na forma [[x1, y1], [x2, y2], ..., [xn, yn]]
-                lista_v = eval(input("Lista de vertices: "))
-                if type(lista_v) != list:
-                    print("Valor inválido")
-                    continue
-                for v in lista_v:
-                    espaço.adiciona_vertice(float(v[0]), float(v[1]))
-            case '2':
-                espaço.enum_vertices()
-                # Obtem uma lista de arestas na forma [[v1, v2], ..., [vi, vj]]
-                # onde v é a posição do vertice na lista de vertices
-                lista = eval(input("Lista de arestas: "))
-                if type(lista) != list:
-                    print("Valor inválido")
-                    continue
-                for i in lista:
-                    espaço.adiciona_aresta(int(i[0]), int(i[1]))
-            case '3':
-                espaço.enum_vertices()
-                # Obtem uma lista de vertices que definem uma face na forma [v1, v2, ..., vn] onde
-                # v é a posição do vertice na lista de vertices
-                lista = eval(input("Lista de vertices: "))
-                if type(lista) != list:
-                    print("Valor inválido")
-                    continue
-                espaço.adiciona_face(lista)
-            case '4':
-                espaço.desenha_imagem()
-            case '5':
-                width = int(input("Nova largura: "))
-                height = int(input("Nova altura: "))
-                if width <= 0 or height <= 0:
-                    input("Impossível")
-                else:
-                    espaço.altera_resolução(width, height)
-            case '6':
+
+        def menu_adiciona_vertice():
+            # Exibe um diálogo para solicitar as coordenadas do novo vértice
+            x = simpledialog.askfloat("Adicionar Vértice", "Coordenada X:")
+            y = simpledialog.askfloat("Adicionar Vértice", "Coordenada Y:")
+
+            # Verifica se as coordenadas são válidas
+            if x is None or y is None:
+                return
+
+            espaço.adiciona_vertice(x, y)
+
+
+        def menu_adiciona_aresta():
+            int1 = simpledialog.askinteger("Escolha o número do vértice 1", "Vértice 1:")
+            int2 = simpledialog.askinteger("Escolha o número do vértice 2", "Vértice 2:")
+
+            if int1 is None or int2 is None:
+                return
+
+            espaço.adiciona_aresta(int1, int2)
+
+
+        def menu_altera_resolução():
+            width = simpledialog.askinteger("Escolha a largura", "Largura:")
+            height = simpledialog.askinteger("Escolha a altura", "Altura:")
+
+            espaço.altera_resolução(width, height)
+
+
+        def menu_adiciona_face():
+
+            faces = []
+            v1 = simpledialog.askinteger("Escolha o vértice 1", "Vértice 1:")
+            v2 = simpledialog.askinteger("Escolha o vértice 2", "Vértice 2:")
+            v3 = simpledialog.askinteger("Escolha o vértice 3", "Vértice 3:")
+            v4 = simpledialog.askinteger("Escolha o vértice 4", "Vértice 4 (Caso n tenha, digita -1):")
+            v5 = simpledialog.askinteger("Escolha o vértice 5", "Vértice 5 (Caso n tenha, digita -1):")
+            v6 = simpledialog.askinteger("Escolha o vértice 5", "Vértice 6 (Caso n tenha, digita -1):")
+
+            faces.append(v1)
+            faces.append(v2)
+            faces.append(v3)
+
+            if(v3 != -1): faces.append(v3)
+
+            if (v4 != -1): faces.append(v4)
+
+            if (v5 != -1): faces.append(v5)
+
+            if (v6 != -1): faces.append(v6)
+
+            espaço.adiciona_face(faces)
+
+
+        botao_adicionar_vertice = tk.Button(janela, text="Adicionar Vertice", command=menu_adiciona_vertice)
+        botao_adicionar_vertice.pack()
+
+        botao_adicionar_aresta = tk.Button(janela, text="Adicionar Aresta", command=menu_adiciona_aresta)
+        botao_adicionar_aresta.pack()
+
+        botao_adicionar_face = tk.Button(janela, text="Adicionar Face", command=menu_adiciona_face)
+        botao_adicionar_face.pack()
+
+        botao_desenhar_modelo = tk.Button(janela, text="Desenhar Modelo", command=espaço.desenha_imagem)
+        botao_desenhar_modelo.pack()
+
+        botao_alterar_resolucao = tk.Button(janela, text="Alterar Resolução", command=menu_altera_resolução)
+        botao_alterar_resolucao.pack()
+
+        botao_resetar_modelo = tk.Button(janela, text="Resetar Modelo", command=lambda: confirmar_resetar_modelo())
+        botao_resetar_modelo.pack()
+
+
+        def confirmar_resetar_modelo():
+            if messagebox.askyesno("Confirmação", "Tem certeza que deseja resetar o modelo?"):
                 espaço.reseta_espaço()
-                input("Espaço resetado")
-            case _:
-                break
+                messagebox.showinfo("Modelo resetado", "O modelo foi resetado com sucesso.")
+
+
+        # Inicia o loop principal da janela
+        janela.mainloop()
