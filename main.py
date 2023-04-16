@@ -5,6 +5,7 @@ from PIL import Image
 from random import *
 import tkinter as tk
 
+
 class Raster():
     # Inicializa a classe com a resolução inicial e todas as estruturas vazias
     def __init__(self, width, height):
@@ -14,6 +15,7 @@ class Raster():
         self.arestas = []
         self.faces = []
         self.modelo = []
+        self.resoluçãoAlterada = 0
 
     # Adiciona novo vertice na lista de vertices se este já não existir
     def adiciona_vertice(self, x, y):
@@ -235,15 +237,6 @@ class Raster():
                 self.produz_fragmento(pixel[0], pixel[1], self.modelo)
 
     # Desenha os pixels contidos no modelo
-    def desenha_imagem(self):
-        self.produz_modelo()
-        img = Image.new("RGB", (self.width, self.height), "white")
-        pixels = img.load()
-
-        # Desenha o modelo com origem no centro da imagem
-        for coords in self.modelo:
-            pixels[(self.width / 2 + coords[0] - 1, self.height / 2 - coords[1])] = (255, 0, 0)
-        img.show()
 
     def lista_modelo(self):
         for pixel in self.modelo:
@@ -301,6 +294,18 @@ class Raster():
                 return self.cria_poligono(tipo, base, x, y, ttl - 1)
         return vertices, ind
 
+    # Desenha os pixels contidos no modelo
+    def desenha_imagem(self):
+        self.produz_modelo()
+        img = Image.new("RGB", (self.width, self.height), "white")
+        pixels = img.load()
+
+        # Desenha o modelo com origem no centro da imagem
+        for coords in self.modelo:
+            pixels[(self.width / 2 + coords[0] - 1, self.height / 2 - coords[1])] = (255, 0, 0)
+        img.save("imagem.png")
+        img.show()
+
 
 if __name__ == '__main__':
     espaço = Raster(1920, 1080)
@@ -339,10 +344,10 @@ if __name__ == '__main__':
             height = simpledialog.askinteger("Escolha a altura", "Altura:")
 
             espaço.altera_resolução(width, height)
+            espaço.resoluçãoAlterada = 1;
 
 
         def menu_adiciona_face():
-
             faces = []
             v1 = simpledialog.askinteger("Escolha o vértice 1", "Vértice 1:")
             v2 = simpledialog.askinteger("Escolha o vértice 2", "Vértice 2:")
@@ -355,15 +360,43 @@ if __name__ == '__main__':
             faces.append(v2)
             faces.append(v3)
 
-            if(v3 != -1): faces.append(v3)
-
+            if (v3 != -1): faces.append(v3)
             if (v4 != -1): faces.append(v4)
-
             if (v5 != -1): faces.append(v5)
-
             if (v6 != -1): faces.append(v6)
 
             espaço.adiciona_face(faces)
+
+
+        def menu_desenha_imagem():
+            espaço.desenha_imagem()
+
+            if (espaço.resoluçãoAlterada != 1):
+                espaço.width = 1920
+                espaço.height = 1080
+                espaço.desenha_imagem()
+
+                espaço.width = 800
+                espaço.height = 600
+                espaço.desenha_imagem()
+
+                espaço.width = 600
+                espaço.height = 600
+                espaço.desenha_imagem()
+
+                espaço.width = 300
+                espaço.height = 300
+                espaço.desenha_imagem()
+
+                espaço.width = 100
+                espaço.height = 100
+                espaço.desenha_imagem()
+
+
+        def confirmar_resetar_modelo():
+            if messagebox.askyesno("Confirmação", "Tem certeza que deseja resetar o modelo?"):
+                espaço.reseta_espaço()
+                messagebox.showinfo("Modelo resetado", "O modelo foi resetado com sucesso.")
 
 
         botao_adicionar_vertice = tk.Button(janela, text="Adicionar Vertice", command=menu_adiciona_vertice)
@@ -375,21 +408,14 @@ if __name__ == '__main__':
         botao_adicionar_face = tk.Button(janela, text="Adicionar Face", command=menu_adiciona_face)
         botao_adicionar_face.pack()
 
-        botao_desenhar_modelo = tk.Button(janela, text="Desenhar Modelo", command=espaço.desenha_imagem)
+        botao_desenhar_modelo = tk.Button(janela, text="Desenhar Modelo", command=menu_desenha_imagem)
         botao_desenhar_modelo.pack()
 
         botao_alterar_resolucao = tk.Button(janela, text="Alterar Resolução", command=menu_altera_resolução)
         botao_alterar_resolucao.pack()
 
-        botao_resetar_modelo = tk.Button(janela, text="Resetar Modelo", command=lambda: confirmar_resetar_modelo())
+        botao_resetar_modelo = tk.Button(janela, text="Resetar Modelo", command=lambda: confirmar_resetar_modelo)
         botao_resetar_modelo.pack()
-
-
-        def confirmar_resetar_modelo():
-            if messagebox.askyesno("Confirmação", "Tem certeza que deseja resetar o modelo?"):
-                espaço.reseta_espaço()
-                messagebox.showinfo("Modelo resetado", "O modelo foi resetado com sucesso.")
-
 
         # Inicia o loop principal da janela
         janela.mainloop()
