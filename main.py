@@ -303,7 +303,6 @@ class Raster():
         # Desenha o modelo com origem no centro da imagem
         for coords in self.modelo:
             pixels[(self.width / 2 + coords[0] - 1, self.height / 2 - coords[1])] = (255, 0, 0)
-        img.save("imagem.png")
         img.show()
 
 
